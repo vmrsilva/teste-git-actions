@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.InteropServices;
 using Testcontainers.MsSql;
 
 using TutorialIntegrationTests.API;
@@ -11,8 +12,26 @@ namespace TutorialIntegrationTests.Tests;
 
 public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-
-    private readonly MsSqlContainer _sql = new MsSqlBuilder().WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433)).Build();
+    private readonly MsSqlContainer _msSqlContainer;
+    public ApiFactory()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            _msSqlContainer = new MsSqlBuilder()
+                .WithImage(
+                    "mcr.microsoft.com/mssql/server:2022-latest"
+                )
+                .WithPortBinding(1433, true)
+                .Build();
+        }
+        else
+        {
+            _msSqlContainer = new MsSqlBuilder()
+                .WithPortBinding(1433, true)
+                .Build();
+        }
+    }
+    //private readonly MsSqlContainer _sql = new MsSqlBuilder().WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433)).Build();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -41,20 +60,20 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         services.AddDbContext<TodoContext>(options =>
         {
-            options.UseSqlServer(_sql.GetConnectionString());
+            options.UseSqlServer(_msSqlContainer.GetConnectionString());
         });
     }
 
     public async Task InitializeAsync()
     {
-        await _sql.StartAsync();
-        var x = _sql.GetConnectionString();
+        await _msSqlContainer.StartAsync();
+        var x = _msSqlContainer.GetConnectionString();
 
         var aa = x;
     }
 
     public async new Task DisposeAsync()
     {
-        await _sql.StopAsync();
+        await _msSqlContainer.StopAsync();
     }
 }
