@@ -11,11 +11,8 @@ namespace TutorialIntegrationTests.Tests;
 
 public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    //private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder().WithUsername("postgres")
-    //                                                                        .WithPassword("postgres")
-    //                                                                        .Build();
 
-    private readonly MsSqlContainer _sql = new MsSqlBuilder().Build();
+    private readonly MsSqlContainer _sql = new MsSqlBuilder().WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433)).Build();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
