@@ -18,16 +18,16 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             _msSqlContainer = new MsSqlBuilder()
-                .WithImage(
-                    "mcr.microsoft.com/mssql/server:2022-latest"
-                )
-                .WithPortBinding(1433, true)
-                .Build();
+                .WithImage("mcr.microsoft.com/mssql/server:2019-latest")
+                  .WithPassword("password(!)Strong")
+                         .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
+                         .Build();
         }
         else
         {
             _msSqlContainer = new MsSqlBuilder()
-                .WithPortBinding(1433, true)
+                 //.WithImage("mcr.microsoft.com/mssql/server:2019-latest")
+
                 .Build();
         }
     }
