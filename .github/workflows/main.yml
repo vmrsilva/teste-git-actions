@@ -25,4 +25,4 @@ jobs:
         run: dotnet build ./TutorialIntegrationTests.sln --no-restore
 
       - name: Test
-        run: dotnet test ./TutorialIntegrationTests --no-build
+        run: dotnet test ./TutorialIntegrationTests.sln --no-build
