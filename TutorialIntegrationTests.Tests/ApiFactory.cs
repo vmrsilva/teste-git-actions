@@ -25,13 +25,9 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         }
         else
         {
-            _msSqlContainer = new MsSqlBuilder()
-                 //.WithImage("mcr.microsoft.com/mssql/server:2019-latest")
-
-                .Build();
+            _msSqlContainer = new MsSqlBuilder().Build();
         }
     }
-    //private readonly MsSqlContainer _sql = new MsSqlBuilder().WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433)).Build();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
