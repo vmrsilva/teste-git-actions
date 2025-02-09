@@ -26,3 +26,5 @@ jobs:
 
       - name: Test
         run: dotnet test ./TutorialIntegrationTests.sln --no-build
+        env:
+          DOTNET_TEST_LOGGER: "console;verbosity=detailed"
